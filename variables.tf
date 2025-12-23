@@ -144,10 +144,10 @@ variable "appgw_nsg_rules" {
   default = []
 }
 
-# NSG Rules - Map format for lz-module-nsg
+# NSG Rules - Map format for lz-module-nsg (nested by subnet)
 variable "nsg_rules" {
-  description = "Network security group rules configuration for all subnets"
-  type = map(object({
+  description = "Network security group rules configuration organized by subnet name. Format: { subnet_name = { rule_name = {...} } }"
+  type = map(map(object({
     priority                     = number
     direction                    = string
     access                       = string
@@ -159,7 +159,7 @@ variable "nsg_rules" {
     source_address_prefixes      = optional(list(string))
     destination_address_prefix   = optional(string)
     destination_address_prefixes = optional(list(string))
-  }))
+  })))
   default = {}
 }
 

@@ -13,7 +13,7 @@ data "azurerm_key_vault" "shared" {
 
 # Spoke Virtual Network using LZ Module
 module "spoke_vnet" {
-  source = "git::https://github.com/sdas1990/az-lz-module.git//modules/lz-module-vnet?ref=v1.1.0"
+  source = "git::https://github.com/sdas1990/az-lz-module.git//modules/lz-module-vnet?ref=v1.1.2"
 
   name                = var.spoke_vnet_name
   resource_group_name = azurerm_resource_group.spoke.name
@@ -26,7 +26,7 @@ module "spoke_vnet" {
 
 # Network Security Groups for Subnets
 module "spoke_nsgs" {
-  source = "git::https://github.com/sdas1990/az-lz-module.git//modules/lz-module-nsg?ref=v1.1.0"
+  source = "git::https://github.com/sdas1990/az-lz-module.git//modules/lz-module-nsg?ref=v1.1.2"
 
   resource_group_name = azurerm_resource_group.spoke.name
   location            = azurerm_resource_group.spoke.location
