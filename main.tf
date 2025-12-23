@@ -1,11 +1,10 @@
-# Resource Group for Spoke Application
+
 resource "azurerm_resource_group" "spoke" {
   name     = var.resource_group_name
   location = var.location
   tags     = var.tags
 }
 
-# Key Vault Data Source for SSH Key Storage
 data "azurerm_key_vault" "shared" {
   name                = var.key_vault_name
   resource_group_name = var.key_vault_resource_group_name
@@ -56,9 +55,14 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
   use_remote_gateways          = var.use_remote_gateways
+
+  depends_on = [
+    module.spoke_route_table,
+    module.spoke_nsgs
+  ]
 }
 
-# VNet Peering: Hub to Spoke (requires permissions in hub subscription)
+# VNet Peering: Hub to Spoke 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                         = "peer-hub-to-${var.spoke_vnet_name}"
   resource_group_name          = var.hub_resource_group_name
@@ -68,17 +72,13 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   allow_forwarded_traffic      = true
   allow_gateway_transit        = var.hub_allow_gateway_transit
   use_remote_gateways          = false
+
+  depends_on = [
+    module.spoke_route_table,
+    module.spoke_nsgs
+  ]
 }
 
-# Store SSH Public Key in Key Vault
-# Note: Requires Key Vault Secrets Officer role assignment
-# resource "azurerm_key_vault_secret" "vm_ssh_public_key" {
-#   name         = var.vm_ssh_key_secret_name
-#   value        = var.vm_ssh_public_key
-#   key_vault_id = data.azurerm_key_vault.shared.id
-#
-#   tags = var.tags
-# }
 
 # Linux VM in Workload Subnet
 resource "azurerm_network_interface" "vm_nic" {
